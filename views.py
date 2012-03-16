@@ -40,9 +40,11 @@ def send_reset_password_mail(request, user = None):
         'token': django.contrib.auth.tokens.default_token_generator.make_token(user),
         'protocol': request.is_secure() and 'https' or 'http',
     }
-    django.core.mail.send_mail(_("Your new account on %s") % site_name,
-        t.render(django.template.Context(c)), None, [user.email])
-
+    body = t.render(django.template.Context(c))
+    try:
+        django.core.mail.send_mail(_("Your new account on %s") % site_name, body, None, [user.email])
+    except Exception, e:
+        django.contrib.messages.warning(request, "Unable to send welcome email: " + str(e))
 
 def event(request, slug):
     events = booking.models.Event.objects.all()
@@ -96,7 +98,12 @@ def edit_event(request, e):
         if u.is_anonymous():
             u = django.contrib.auth.models.User(username=username, email=email)
             u.set_unusable_password()
-            u.save()
+            try:
+                u.save()
+            except django.db.utils.IntegrityError:
+                django.contrib.messages.warning(request, "Unable to register: Username not unique. Please choose another one")
+                return django.http.HttpResponseRedirect(django.core.urlresolvers.reverse("booking_event", kwargs = {"slug":e.slug}))
+
             send_reset_password_mail(request, u)
 
         u.email = email

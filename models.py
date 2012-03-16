@@ -6,7 +6,6 @@ from django.utils.translation import ugettext_lazy as _
 import django.contrib.contenttypes
 import django.contrib.contenttypes.models
 import django.core.urlresolvers
-import linkableobject.models
 
 class Event(django.db.models.Model):
     def get_absolute_url(self, group=None):
