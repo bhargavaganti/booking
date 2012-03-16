@@ -1,5 +1,5 @@
 import django.template
-import booking.models
+import appomatic_booking.models
 import django.template
 
 register = django.template.Library()

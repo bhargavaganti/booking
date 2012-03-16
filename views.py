@@ -4,15 +4,15 @@ import django.shortcuts
 import django.contrib.auth.decorators
 import django.contrib.auth.models
 import django.template
-import booking.models
-import booking.forms
+import appomatic_booking.models
+import appomatic_booking.forms
 import settings
 import datetime
 import django.contrib.auth.tokens
 import django.contrib.sites.models
 import django.template.loader
 import django.utils.http
-import account.models
+import appomatic_account.models
 import django.contrib.messages
 import django.http
 import django.core.urlresolvers
@@ -30,7 +30,7 @@ def send_reset_password_mail(request, user = None):
     site_name = current_site.name
     domain = current_site.domain
 
-    t = django.template.loader.get_template('booking/new_account_message.txt')
+    t = django.template.loader.get_template('appomatic_booking/new_account_message.txt')
     c = {
         'email': user.email,
         'domain': domain,
@@ -47,7 +47,7 @@ def send_reset_password_mail(request, user = None):
         django.contrib.messages.warning(request, "Unable to send welcome email: " + str(e))
 
 def event(request, slug):
-    events = booking.models.Event.objects.all()
+    events = appomatic_booking.models.Event.objects.all()
 
     if slug is not None:
         u = request.user
@@ -61,13 +61,13 @@ def event(request, slug):
         return list_events(request, events)
 
 def list_events(request, events):
-    return django.shortcuts.render_to_response("booking/event_list.html", {
+    return django.shortcuts.render_to_response("appomatic_booking/event_list.html", {
         "events": events,
         "user": request.user,
     }, context_instance=django.template.RequestContext(request))
 
 def remove_event_date(request, slug, date_id):
-    events = booking.models.Event.objects.all()
+    events = appomatic_booking.models.Event.objects.all()
 
     e = events.get(slug = slug)
     u = request.user
@@ -83,12 +83,12 @@ def remove_event_date(request, slug, date_id):
 def edit_event(request, e):
     u = request.user
     if request.method == "POST":
-        form = booking.forms.EditEventForm(u, request.POST, instance=e)
+        form = appomatic_booking.forms.EditEventForm(u, request.POST, instance=e)
         if e.owner.id == u.id and form.is_valid():
             e = form.save()
             if form.cleaned_data['add_date']:
                 if not e.dates.filter(date = form.cleaned_data['add_date']).count():
-                    booking.models.EventDate(date=form.cleaned_data['add_date'], event=e).save()
+                    appomatic_booking.models.EventDate(date=form.cleaned_data['add_date'], event=e).save()
 
         username = request.POST['username'].lower()
         email = request.POST['email'].lower()
@@ -119,12 +119,12 @@ def edit_event(request, e):
             i.phone = phone
             i.save()
         else:
-            account.models.UserInfo(user = u, phone = phone).save()
+            appomatic_account.models.UserInfo(user = u, phone = phone).save()
 
         try:
             event_booking = u.event_bookings.get(event__id = e.id)
         except:
-            event_booking = booking.models.EventBooking(booker=u, event=e)
+            event_booking = appomatic_booking.models.EventBooking(booker=u, event=e)
         event_booking.save()
 
         for date in event_booking.dates.all():
@@ -132,14 +132,14 @@ def edit_event(request, e):
 
         for date in dates:
             d = e.dates.get(date=date)
-            booking.models.EventDateBooking(event_booking = event_booking, date=d).save()
+            appomatic_booking.models.EventDateBooking(event_booking = event_booking, date=d).save()
 
         return django.http.HttpResponseRedirect(django.core.urlresolvers.reverse("booking_event", kwargs = {"slug":e.slug}))
     else:
-        form = booking.forms.EditEventForm(u, instance=e)
+        form = appomatic_booking.forms.EditEventForm(u, instance=e)
 
     return django.shortcuts.render_to_response(
-        "booking/event.html", 
+        "appomatic_booking/event.html", 
         {
             "event": e,
             "user": u,
@@ -152,7 +152,7 @@ def edit_event(request, e):
 def add_event(request, slug):
     if request.method == "POST":
         if request.user.is_authenticated():
-            form = booking.forms.EventForm(request.user, request.POST)
+            form = appomatic_booking.forms.EventForm(request.user, request.POST)
             if form.is_valid():
                 event = form.save(commit=False)
                 event.owner = request.user
@@ -160,7 +160,7 @@ def add_event(request, slug):
                 django.contrib.messages.add_message(request, django.contrib.messages.SUCCESS,
                                                     _("added event '%s'") % event.name)
                 return django.http.HttpResponseRedirect(django.core.urlresolvers.reverse("booking_event", kwargs = {"slug":event.slug}))
-    form = booking.forms.EventForm(request.user)    
-    return django.shortcuts.render_to_response("booking/event_add.html", {"form": form}, context_instance=django.template.RequestContext(request))
+    form = appomatic_booking.forms.EventForm(request.user)    
+    return django.shortcuts.render_to_response("appomatic_booking/event_add.html", {"form": form}, context_instance=django.template.RequestContext(request))
 
 

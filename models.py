@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import django.db.models
 import django.contrib.auth.models
-import account.models
+import appomatic_account.models
 from django.utils.translation import ugettext_lazy as _
 import django.contrib.contenttypes
 import django.contrib.contenttypes.models
@@ -9,7 +9,7 @@ import django.core.urlresolvers
 
 class Event(django.db.models.Model):
     def get_absolute_url(self, group=None):
-        return django.core.urlresolvers.reverse("booking.views.event", kwargs = {"slug": self.slug})
+        return django.core.urlresolvers.reverse("appomatic_booking.views.event", kwargs = {"slug": self.slug})
 
     slug = django.db.models.SlugField(_('slug'))
     name = django.db.models.CharField(_('name'), max_length=256)

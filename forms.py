@@ -1,5 +1,5 @@
 import django.forms
-import booking.models
+import appomatic_booking.models
 import datetime
 
 class EventForm(django.forms.ModelForm):
@@ -8,7 +8,7 @@ class EventForm(django.forms.ModelForm):
         super(EventForm, self).__init__(*args, **kwargs)
 
     class Meta:
-        model = booking.models.Event
+        model = appomatic_booking.models.Event
         exclude = ["owner"]
     
     def clean(self):
