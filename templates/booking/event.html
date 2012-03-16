@@ -1,0 +1,136 @@
+{% extends "appomatic_redhog_org/base.html" %}
+
+{% load i18n %}
+{% load event_tags %}
+
+{% block body %}
+  <style>
+    input {
+      border: none;
+      background: #cccccc;
+    }
+    h1 {
+      font-size: 14pt;
+    }
+    table {
+      border-collapse: collapse;
+      margin-top: 5pt;
+      margin-bottom: 5pt;
+    }
+    td, th {
+      border: 1px solid #999999;
+      text-align: left;
+      padding: 0;
+    }
+    td.booked {
+      background: #99ff99;
+      color: #99ff99;
+    }
+    form {
+      overflow: auto;
+      width: 100%;
+    }
+    .rightadj {
+      text-align: right;
+      padding-right: 2px;
+    }
+  </style>
+
+  <form method="post" class="uniForm">
+   {% csrf_token %}
+
+   <h1>
+     {{event.name}}
+     {% if group %}
+       for <a href="{{ group.get_absolute_url }}">{{ group }}</a>
+     {% endif %}
+   </h1>
+
+   {% if event.owner.id == request.user.id %}
+     {{ form.media }}
+     {{ form.as_p }}
+   {% else %}
+     <p>{{event.description|safe}}</p>
+   {% endif %}
+
+   <button type="submit" name="submit">Save</button>
+
+   <table>
+    <tr>
+     <td></td>
+     <td></td>
+     <td></td>
+     <th class="rightadj">Year:</th>
+     {% for year in event.date_tree %}
+       <th colspan="{{year.nr_dates}}">{{ year.year }}</th>
+     {% endfor %}
+    </tr>
+    <tr>
+     <td></td>
+     <td></td>
+     <td></td>
+     <th class="rightadj">Month:</th>
+     {% for year in event.date_tree %}
+       {% for month in year.months %}
+         <th colspan="{{month.nr_dates}}">{{ month.month }}</th>
+       {% endfor %}
+     {% endfor %}
+    </tr>
+    <tr>
+     <th>Handle</th>
+     <th>E-mail</th>
+     <th>Phone</th>
+     <th class="rightadj">Date:</th>
+     {% for year in event.date_tree %}
+       {% for month in year.months %}
+         {% for date in month.dates %}
+           {% if event.owner.id == request.user.id %}
+             <th><a href="{% url booking_event_remove_date slug=event.slug date_id=date.id %}">{{ date.date.day }}</a></th>
+           {% else %}
+             <th>{{ date.date.day }}</th>
+           {% endif %}
+         {% endfor %}
+       {% endfor %}
+     {% endfor %}
+    </tr>
+    <tr>
+     <td><input type="text" name="username" value="{{request.user.username}}" /></td>
+     <td><input type="text" name="email" value="{{request.user.email}}" /></td>
+     <td colspan="2"><input type="text" name="phone" value="{{request.user.phone}}" /></td>
+     {% for date in event.sorted_dates %}
+       <td><input type='checkbox' name='days' value='{{ date.date|date:"Y-m-d" }}'
+         {% with event|event_get_booking:request.user as event_booking %}
+           {% if event_booking and event_booking.dates|event_get_date:date %}
+  	     checked="true"
+           {% endif %}
+         {% endwith %}
+       /></td>
+     {% endfor %}
+    </tr>
+    {% for booking in event.bookings.all %}
+     <tr>
+      <td>{{ booking.booker.id }} :: {{ booking.booker.username }}</td>
+      <td>{% if booking.booker.info.public_email or request.user.is_superuser %}{{ booking.booker.email }}{% else %}XXX{% endif %}</td>
+      <td colspan="2">{% if booking.booker.info.public_phone or request.user.is_superuser %}{{ booking.booker.info.phone }}{% else %}XXX{% endif %}</td>
+      {% for date in event.sorted_dates %}
+        {% if booking.dates|event_get_date:date %}
+	  <td class='booked'>X</td>
+        {% else %}
+	  <td class='unbooked'>&nbsp;</td>
+        {% endif %}
+      {% endfor %}
+     </tr>
+    {% endfor %}
+    <tr>
+     <td></td>
+     <td></td>
+     <td></td>
+     <th class="rightadj">Total:</th>
+     {% for date in event.sorted_dates %}
+       <td style='background: {{date.color}}'>{{date.bookings.count}}</td>
+     {% endfor %}
+    </tr>
+   </table>
+  </form>
+
+{% endblock %}
