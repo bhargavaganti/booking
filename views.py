@@ -141,6 +141,7 @@ def edit_event(request, e):
     return django.shortcuts.render_to_response(
         "appomatic_booking/event.html", 
         {
+            "today": datetime.date.today(),
             "event": e,
             "user": u,
             'static_url': settings.STATIC_URL,

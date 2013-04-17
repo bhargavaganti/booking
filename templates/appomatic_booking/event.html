@@ -1,4 +1,4 @@
-{% extends "appomatic_redhog_org/base.html" %}
+{% extends "appomatic_redhogorg_data/base.html" %}
 
 {% load i18n %}
 {% load event_tags %}
@@ -17,14 +17,25 @@
       margin-top: 5pt;
       margin-bottom: 5pt;
     }
+    tr.input {
+      border: 2px solid #cc5555;
+    }
+    .today {
+      border-left: 2px solid #5555cc;
+      border-right: 2px solid #5555cc;
+    }
     td, th {
       border: 1px solid #999999;
       text-align: left;
       padding: 0;
+      vertical-align: top;
     }
     td.booked {
       background: #99ff99;
       color: #99ff99;
+    }
+    td.filler {
+      border: none;
     }
     form {
       overflow: auto;
@@ -41,9 +52,6 @@
 
    <h1>
      {{event.name}}
-     {% if group %}
-       for <a href="{{ group.get_absolute_url }}">{{ group }}</a>
-     {% endif %}
    </h1>
 
    {% if event.owner.id == request.user.id %}
@@ -53,22 +61,24 @@
      <p>{{event.description|safe}}</p>
    {% endif %}
 
-   <button type="submit" name="submit">Save</button>
+   <div>
+     {% if request.user.is_anonymous %}
+       <a href="{% url 'django.contrib.auth.views.login' %}?next={% url 'appomatic_booking.views.event' slug=event.slug%}">Log in</a> to change an existing registration.
+     {% else %}
+       You are logged in as {{ request.user.username }}. <a href="{% url 'django.contrib.auth.views.logout' %}?next={% url 'appomatic_booking.views.event' slug=event.slug%}">Log out</a> to add a new registration.
+     {% endif %}
+   </div>
+   <br />
 
    <table>
     <tr>
-     <td></td>
-     <td></td>
-     <td></td>
+     <td class="filler" rowspan="2" colspan="3"><button type="submit" name="submit">Save</button></td>
      <th class="rightadj">Year:</th>
      {% for year in event.date_tree %}
        <th colspan="{{year.nr_dates}}">{{ year.year }}</th>
      {% endfor %}
     </tr>
     <tr>
-     <td></td>
-     <td></td>
-     <td></td>
      <th class="rightadj">Month:</th>
      {% for year in event.date_tree %}
        {% for month in year.months %}
@@ -85,20 +95,20 @@
        {% for month in year.months %}
          {% for date in month.dates %}
            {% if event.owner.id == request.user.id %}
-             <th><a href="{% url booking_event_remove_date slug=event.slug date_id=date.id %}">{{ date.date.day }}</a></th>
+             <th class="{% if date.date == today %}today{% endif %}"><a href="{% url 'booking_event_remove_date' slug=event.slug date_id=date.id %}">{{ date.date.day }}</a></th>
            {% else %}
-             <th>{{ date.date.day }}</th>
+             <th class="{% if date.date == today %}today{% endif %}">{{ date.date.day }}</th>
            {% endif %}
          {% endfor %}
        {% endfor %}
      {% endfor %}
     </tr>
-    <tr>
+    <tr class="input">
      <td><input type="text" name="username" value="{{request.user.username}}" /></td>
      <td><input type="text" name="email" value="{{request.user.email}}" /></td>
-     <td colspan="2"><input type="text" name="phone" value="{{request.user.phone}}" /></td>
+     <td colspan="2"><input type="text" name="phone" value="{{request.user.info.phone}}" /></td>
      {% for date in event.sorted_dates %}
-       <td><input type='checkbox' name='days' value='{{ date.date|date:"Y-m-d" }}'
+       <td class="{% if date.date == today %}today{% endif %}"><input type='checkbox' name='days' value='{{ date.date|date:"Y-m-d" }}'
          {% with event|event_get_booking:request.user as event_booking %}
            {% if event_booking and event_booking.dates|event_get_date:date %}
   	     checked="true"
@@ -109,25 +119,25 @@
     </tr>
     {% for booking in event.bookings.all %}
      <tr>
-      <td>{{ booking.booker.id }} :: {{ booking.booker.username }}</td>
+      <td>{{ booking.booker.username }}</td>
       <td>{% if booking.booker.info.public_email or request.user.is_superuser %}{{ booking.booker.email }}{% else %}XXX{% endif %}</td>
       <td colspan="2">{% if booking.booker.info.public_phone or request.user.is_superuser %}{{ booking.booker.info.phone }}{% else %}XXX{% endif %}</td>
       {% for date in event.sorted_dates %}
         {% if booking.dates|event_get_date:date %}
-	  <td class='booked'>X</td>
+	  <td class='booked {% if date.date == today %}today{% endif %}'>X</td>
         {% else %}
-	  <td class='unbooked'>&nbsp;</td>
+	  <td class='unbooked {% if date.date == today %}today{% endif %}'>&nbsp;</td>
         {% endif %}
       {% endfor %}
      </tr>
     {% endfor %}
     <tr>
-     <td></td>
-     <td></td>
-     <td></td>
+     <td class="filler"></td>
+     <td class="filler"></td>
+     <td class="filler"></td>
      <th class="rightadj">Total:</th>
      {% for date in event.sorted_dates %}
-       <td style='background: {{date.color}}'>{{date.bookings.count}}</td>
+       <td class="{% if date.date == today %}today{% endif %}" style='background: {{date.color}}'>{{date.bookings.count}}</td>
      {% endfor %}
     </tr>
    </table>

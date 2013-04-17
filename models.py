@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import django.db.models
 import django.contrib.auth.models
-import appomatic_account.models
 from django.utils.translation import ugettext_lazy as _
 import django.contrib.contenttypes
 import django.contrib.contenttypes.models
 import django.core.urlresolvers
+import ckeditor.fields
 
 class Event(django.db.models.Model):
     def get_absolute_url(self, group=None):
@@ -13,7 +13,7 @@ class Event(django.db.models.Model):
 
     slug = django.db.models.SlugField(_('slug'))
     name = django.db.models.CharField(_('name'), max_length=256)
-    description = django.db.models.TextField(_('description'))
+    description = ckeditor.fields.RichTextField(_('description'))
     owner = django.db.models.ForeignKey(django.contrib.auth.models.User, related_name="events")
 
     min_bookings = django.db.models.IntegerField(_('min_bookings'))

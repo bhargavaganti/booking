@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import django.conf.urls.defaults
+import django.conf.urls
 
-urlpatterns = django.conf.urls.defaults.patterns(
+urlpatterns = django.conf.urls.patterns(
     '',
-    django.conf.urls.defaults.url(r'^booking/?$', 'appomatic_booking.views.event', name="booking_event_list"),
-    django.conf.urls.defaults.url(r'^booking/(?P<slug>\w+)/?$', 'appomatic_booking.views.event', name="booking_event"),
-    django.conf.urls.defaults.url(r'^booking/(?P<slug>\w+)/remove-date/(?P<date_id>\d+)/?$', 'appomatic_booking.views.remove_event_date', name="booking_event_remove_date"),
+    django.conf.urls.url(r'^booking/?$', 'appomatic_booking.views.event', name="booking_event_list"),
+    django.conf.urls.url(r'^booking/(?P<slug>\w+)/?$', 'appomatic_booking.views.event', name="booking_event"),
+    django.conf.urls.url(r'^booking/(?P<slug>\w+)/remove-date/(?P<date_id>\d+)/?$', 'appomatic_booking.views.remove_event_date', name="booking_event_remove_date"),
+    (r'^auth/', django.conf.urls.include('django.contrib.auth.urls'))
 )
+

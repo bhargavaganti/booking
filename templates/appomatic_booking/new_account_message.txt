@@ -1,10 +1,9 @@
 {% load i18n %}{% blocktrans %}New account created{% endblocktrans %}
 
-{% url django.contrib.auth.views.password_reset_confirm uidb36=uid token=token as path %}
 {% blocktrans %}You're receiving this e-mail becuase you or someone else has booked you in for an event at our site.
 It can be safely ignored if you did not request this. Click the link below to set your password.
 
-{{ protocol }}://{{ domain }}{{ path }}
+{{ protocol }}://{{ domain }}/reset/{{ uid }}-{{ token }}
 
 Thanks for using our site!
 {% endblocktrans %}
