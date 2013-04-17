@@ -46,7 +46,7 @@ def send_reset_password_mail(request, user = None):
     except Exception, e:
         django.contrib.messages.warning(request, "Unable to send welcome email: " + str(e))
 
-def event(request, slug):
+def event(request, slug=None):
     events = appomatic_booking.models.Event.objects.all()
 
     if slug is not None:
