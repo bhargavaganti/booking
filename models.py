@@ -11,8 +11,6 @@ import appomatic_account.models
 import datetime
 
 class Event(appomatic_redhogorg_data.models.Article):
-    owner = django.db.models.ForeignKey(django.contrib.auth.models.User, related_name="events")
-
     min_bookings = django.db.models.IntegerField(_('min_bookings'))
     ideal_bookings = django.db.models.IntegerField(_('ideal_bookings'))
     max_bookings = django.db.models.IntegerField(_('max_bookings'))
