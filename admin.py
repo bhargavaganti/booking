@@ -6,7 +6,7 @@ import appomatic_redhogorg_data.admin
 class EventDateInline(django.contrib.admin.TabularInline):
     model = appomatic_booking.models.EventDate
 
-class EventAdmin(appomatic_redhogorg_data.admin.NodeAdmin):
+class EventAdmin(appomatic_redhogorg_data.admin.ArticleAdmin):
     inlines = [EventDateInline]
 
 django.contrib.admin.site.register(appomatic_booking.models.Event, EventAdmin)
