@@ -9,6 +9,7 @@ import ckeditor.fields
 import appomatic_redhogorg_data.models
 import appomatic_account.models
 import datetime
+import userena.models
 
 class Event(appomatic_redhogorg_data.models.Article):
     min_bookings = django.db.models.IntegerField(_('min_bookings'))
@@ -166,3 +167,5 @@ class EventDateBooking(django.db.models.Model):
     def __unicode__(self):
         return "%s @ %s" % (self.event_booking, self.date.date)
 
+class Profile(userena.models.UserenaLanguageBaseProfile):
+    pass
