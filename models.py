@@ -6,12 +6,12 @@ import django.contrib.contenttypes
 import django.contrib.contenttypes.models
 import django.core.urlresolvers
 import ckeditor.fields
-import appomatic_redhogorg_data.models
+import appomatic_renderable.models
 import appomatic_account.models
 import datetime
 import userena.models
 
-class Event(appomatic_redhogorg_data.models.Article):
+class Event(appomatic_renderable.models.Article):
     min_bookings = django.db.models.IntegerField(_('min_bookings'))
     ideal_bookings = django.db.models.IntegerField(_('ideal_bookings'))
     max_bookings = django.db.models.IntegerField(_('max_bookings'))

@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 import django.contrib.admin
 import appomatic_booking.models
-import appomatic_redhogorg_data.admin
+import appomatic_renderable.admin
 
 class EventDateInline(django.contrib.admin.TabularInline):
     model = appomatic_booking.models.EventDate
 
-class EventAdmin(appomatic_redhogorg_data.admin.ArticleAdmin):
+class EventAdmin(appomatic_renderable.admin.ArticleAdmin):
     inlines = [EventDateInline]
 
 django.contrib.admin.site.register(appomatic_booking.models.Event, EventAdmin)
