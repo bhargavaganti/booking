@@ -63,7 +63,7 @@ class Event(appomatic_renderable.models.Article):
         except Exception, e:
             django.contrib.messages.warning(request, "Unable to send welcome email: " + str(e))
 
-    def handle_edit(self, request, style = 'page.html'):
+    def handle__edit(self, request, style = 'page.html'):
         if request.method != "POST":
             return {}
 
