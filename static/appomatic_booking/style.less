@@ -1,0 +1,59 @@
+input {
+  border: none;
+  background: #cccccc;
+}
+h1 {
+  font-size: 14pt;
+}
+table {
+  border-collapse: collapse;
+  margin-top: 5pt;
+  margin-bottom: 5pt;
+}
+tr.input {
+  border: 2px solid #cc5555;
+}
+.today {
+  border-left: 2px solid #5555cc;
+  border-right: 2px solid #5555cc;
+}
+td, th {
+  border: 1px solid #999999;
+  text-align: left;
+  padding: 0;
+  vertical-align: top;
+}
+td.booked {
+  background: #99ff99;
+  color: #99ff99;
+}
+td.filler {
+  border: none;
+}
+form {
+  overflow: auto;
+  width: 100%;
+}
+.rightadj {
+  text-align: right;
+  padding-right: 2px;
+}
+
+@media print {
+  .login,
+  .input,
+  button {
+    display: none;
+  }
+  table {
+    width: 100%;
+    page-break-inside: avoid;
+  }
+  .illustration {
+    width: auto;
+    max-width: 50%;
+    float: right;
+    margin-left: 8pt;
+    margin-bottom: 8pt;
+  }
+}

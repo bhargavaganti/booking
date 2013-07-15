@@ -3,63 +3,26 @@
 {% load i18n %}
 {% load event_tags %}
 
+{% block meta %}
+  {{ block.super}}
+  <link rel="stylesheet/less" type="text/css" href="{{STATIC_URL}}appomatic_booking/style.less" />
+{% endblock %}
+
 {% block content %}
   {{ block.super}}
-  <style>
-    input {
-      border: none;
-      background: #cccccc;
-    }
-    h1 {
-      font-size: 14pt;
-    }
-    table {
-      border-collapse: collapse;
-      margin-top: 5pt;
-      margin-bottom: 5pt;
-    }
-    tr.input {
-      border: 2px solid #cc5555;
-    }
-    .today {
-      border-left: 2px solid #5555cc;
-      border-right: 2px solid #5555cc;
-    }
-    td, th {
-      border: 1px solid #999999;
-      text-align: left;
-      padding: 0;
-      vertical-align: top;
-    }
-    td.booked {
-      background: #99ff99;
-      color: #99ff99;
-    }
-    td.filler {
-      border: none;
-    }
-    form {
-      overflow: auto;
-      width: 100%;
-    }
-    .rightadj {
-      text-align: right;
-      padding-right: 2px;
-    }
-  </style>
 
   <form method="post" class="uniForm">
    {% csrf_token %}
    <input type="hidden" name="method" value="edit">
 
-   <div>
+   <div class="login">
      {% if request.user.is_anonymous %}
        <a href="{% url 'django.contrib.auth.views.login' %}?next={{obj.get_absolute_url}}">Log in</a> to change an existing registration.
      {% else %}
        You are logged in as {{ request.user.username }}. <a href="{% url 'django.contrib.auth.views.logout' %}?next={{obj.get_absolute_url}}">Log out</a> to add a new registration.
      {% endif %}
+     <br />
    </div>
-   <br />
 
    <table>
     <tr>
