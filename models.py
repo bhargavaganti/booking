@@ -74,21 +74,23 @@ class Event(appomatic_renderable.models.Article):
         phone = request.POST['phone']
         dates = [datetime.datetime(*[int(x) for x in day.split("-")]) for day in request.POST.getlist("days")]
 
-        if u.is_anonymous():
+        anon = u.is_anonymous()
+        if anon:
             u = django.contrib.auth.models.User(username=username, email=email)
             u.set_unusable_password()
-            try:
-                u.save()
-            except django.db.utils.IntegrityError:
-                django.contrib.messages.warning(request, "Unable to register: Username not unique. Please choose another one")
-                return {}
-
-            self.send_reset_password_mail(request, u)
 
         u.email = email
         u.username = username
+ 
+        try:
+            u.save()
+        except django.db.utils.IntegrityError:
+            loginurl = django.core.urlresolvers.reverse('django.contrib.auth.views.login') + "?next=" + self.get_absolute_url()
+            django.contrib.messages.warning(request, "Unable to register: Username not unique. Please choose another one or <a href='%s'>log in</a> to use an existing account." % loginurl)
+            return {}
 
-        u.save()
+        if anon:
+            self.send_reset_password_mail(request, u)
 
         try:
             i = u.info
